@@ -133,7 +133,7 @@ function DashboardPreview() {
         {[LayoutDashboard, ReceiptText, PieChart, Goal].map((Icon, i) => <span className={i === 0 ? 'mini-active' : ''} key={i}><Icon size={16} /></span>)}
       </div>
       <div className="preview-main">
-        <div className="preview-top"><div><small>Welcome back</small><b>Good morning, Ali</b></div><div className="preview-avatar">A</div></div>
+        <div className="preview-top"><div><small>Welcome back</small><b>Good morning, Arslan</b></div><div className="preview-avatar">A</div></div>
         <div className="preview-cards">
           <div><small>Total balance</small><strong>Rs. 245,800</strong><em>+12.5%</em></div>
           <div><small>Monthly income</small><strong>Rs. 98,000</strong><em>+8.2%</em></div>
@@ -176,7 +176,7 @@ function Auth({ mode }) {
     setLoading(true)
     setTimeout(() => {
       localStorage.setItem('moneywise-demo-user', JSON.stringify({
-        name: isSignup ? data.get('name') : 'Ali Hassan',
+        name: isSignup ? data.get('name') : 'Arslan',
         email: data.get('email'),
       }))
       localStorage.setItem('moneywise-auth', 'true')
@@ -201,7 +201,7 @@ function Auth({ mode }) {
           <p>{isSignup ? 'Start building healthier money habits today.' : 'Sign in to continue to your financial dashboard.'}</p>
           {error && <div className="form-error">{error}</div>}
           <form onSubmit={submit}>
-            {isSignup && <label>Full name<input name="name" type="text" placeholder="Ali Hassan" required /></label>}
+            {isSignup && <label>Full name<input name="name" type="text" placeholder="Arslan" required /></label>}
             <label>Email address<input name="email" type="email" placeholder="you@example.com" required /></label>
             <label>Password<div className="password-field"><input name="password" type={showPassword ? 'text' : 'password'} placeholder="At least 8 characters" minLength={8} required /><button type="button" onClick={() => setShowPassword(!showPassword)} aria-label="Toggle password visibility">{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></label>
             {isSignup && <label>Confirm password<input name="confirm" type="password" placeholder="Repeat your password" minLength={8} required /></label>}
@@ -302,8 +302,19 @@ function AppShell() {
   useEffect(() => localStorage.setItem('moneywise-demo-budgets', JSON.stringify(budgets)), [budgets])
   useEffect(() => localStorage.setItem('moneywise-demo-goals', JSON.stringify(goals)), [goals])
   const userJson = localStorage.getItem('moneywise-demo-user')
-  const user = userJson ? JSON.parse(userJson) : { name: 'Ali Hassan' }
-  const firstName = user.name?.split(' ')[0] || 'Ali'
+  const storedUser = userJson ? JSON.parse(userJson) : null
+  const user = storedUser?.name === 'Ali Hassan'
+    ? { ...storedUser, name: 'Arslan', email: storedUser.email === 'ali@example.com' ? 'arslan@example.com' : storedUser.email }
+    : storedUser || { name: 'Arslan' }
+  useEffect(() => {
+    if (storedUser?.name === 'Ali Hassan') {
+      localStorage.setItem('moneywise-demo-user', JSON.stringify({
+        name: 'Arslan',
+        email: storedUser.email === 'ali@example.com' ? 'arslan@example.com' : storedUser.email,
+      }))
+    }
+  }, [storedUser?.name, storedUser?.email])
+  const firstName = user.name?.split(' ')[0] || 'Arslan'
   const nav = [
     {path:'/dashboard', label:'Overview', icon:<LayoutDashboard/>},
     {path:'/transactions', label:'Transactions', icon:<ReceiptText/>},
@@ -855,7 +866,10 @@ function PreferenceRow({ label, detail, enabled, onChange }) {
 
 function SettingsPage({ transactions, budgets, goals }) {
   const userJson = localStorage.getItem('moneywise-demo-user')
-  const user = userJson ? JSON.parse(userJson) : { name: 'Ali Hassan', email: 'ali@example.com' }
+  const storedUser = userJson ? JSON.parse(userJson) : null
+  const user = storedUser?.name === 'Ali Hassan'
+    ? { ...storedUser, name: 'Arslan', email: storedUser.email === 'ali@example.com' ? 'arslan@example.com' : storedUser.email }
+    : storedUser || { name: 'Arslan', email: 'arslan@example.com' }
   const [theme, setTheme] = useState(() => localStorage.getItem('moneywise-theme') || 'Light')
   const [language, setLanguage] = useState(() => localStorage.getItem('moneywise-language') || 'English')
   const [saved, setSaved] = useState('')
